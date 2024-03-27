@@ -89,7 +89,7 @@ class TicketListSerializer(TicketSerializer):
     performance = PerformanceListSerializer(many=False, read_only=True)
 
 
-class TicketSeatSerializer(TicketSerializer):
+class TicketSeatsSerializer(TicketSerializer):
     class Meta:
         model = Ticket
         fields = ("row", "seat")
