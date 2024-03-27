@@ -124,3 +124,5 @@ class ReservationSerializer(serializers.ModelSerializer):
             return reservation
 
 
+class ReservationListSerializer(ReservationSerializer):
+    tickets = TicketSerializer(many=True, read_only=True)
