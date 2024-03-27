@@ -1,4 +1,6 @@
+from django.db.models import F, Count
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 
 from theatre.models import (
     Play,
@@ -18,7 +20,8 @@ from theatre.serializers import (
     PlayListSerializer,
     PlayDetailSerializer,
     PerformanceListSerializer,
-    PerformanceDetailSerializer, ReservationListSerializer,
+    PerformanceDetailSerializer,
+    ReservationListSerializer,
 )
 
 
@@ -55,6 +58,20 @@ class PerformanceViewSet(viewsets.ModelViewSet):
     queryset = Performance.objects.all()
     serializer_class = PerformanceSerializer
 
+    def get_queryset(self):
+        queryset = self.queryset.select_related("play", "theatre_hall")
+
+        if self.action == "list":
+            queryset = queryset.annotate(
+                tickets_available=(
+                    F("theatre_hall__rows")
+                    * F("theatre_hall__seats_in_row")
+                    - Count("tickets")
+                )
+            )
+
+        return queryset
+
     def get_serializer_class(self):
         if self.action == "list":
             return PerformanceListSerializer
@@ -65,9 +82,15 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         return self.serializer_class
 
 
+class ReservationPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 100
+
+
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+    pagination_class = ReservationPagination
 
     def get_serializer_class(self):
         if self.action == "list":
