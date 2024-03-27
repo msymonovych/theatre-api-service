@@ -16,13 +16,20 @@ from theatre.serializers import (
     TheatreHallSerializer,
     PerformanceSerializer,
     ReservationSerializer,
-    TicketSerializer
+    TicketSerializer,
+    PlayListSerializer,
 )
 
 
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = Play.objects.all()
     serializer_class = PlaySerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PlayListSerializer
+
+        return self.serializer_class
 
 
 class ActorViewSet(viewsets.ModelViewSet):
@@ -48,6 +55,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
