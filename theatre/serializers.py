@@ -79,19 +79,28 @@ class PerformanceListSerializer(PerformanceSerializer):
         )
 
 
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = "__all__"
+
+
+class TicketListSerializer(TicketSerializer):
+    performance = PerformanceListSerializer(many=False, read_only=True)
+
+
+class TicketSeatSerializer(TicketSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("row", "seat")
+
+
 class PerformanceDetailSerializer(PerformanceSerializer):
     play = PlayListSerializer(many=False, read_only=True)
     theatre_hall = TheatreHallSerializer(many=False, read_only=True)
 
 
-
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
-        fields = "__all__"
-
-
-class TicketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticket
         fields = "__all__"
