@@ -26,7 +26,7 @@ from theatre.serializers import (
 
 
 class PlayViewSet(viewsets.ModelViewSet):
-    queryset = Play.objects.all()
+    queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
 
     def get_serializer_class(self):
@@ -91,6 +91,17 @@ class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = ReservationPagination
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(user=self.request.user)
+
+        if self.action == "list":
+            queryset = queryset.prefetch_related(
+                "theatre_hall__performance__play",
+                "theatre__performance__theatre_hall"
+            )
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == "list":
