@@ -1,8 +1,17 @@
-from typing import Any
+import os
+import uuid
 
 from django.conf import settings
 from django.db import models
+from django.utils.text import slugify
 from rest_framework.exceptions import ValidationError
+
+
+def play_image_path(instance, filename: str):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/plays/", filename)
 
 
 class Play(models.Model):
@@ -10,6 +19,7 @@ class Play(models.Model):
     description = models.TextField()
     actors = models.ManyToManyField("Actor", related_name="plays")
     genres = models.ManyToManyField("Genre", related_name="plays")
+    image = models.ImageField(null=True, upload_to=play_image_path)
 
     class Meta:
         ordering = ("title",)
