@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import F, Count
 from rest_framework import viewsets, mixins
 from rest_framework.pagination import PageNumberPagination
@@ -37,6 +39,30 @@ class PlayViewSet(
     queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
     permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+
+    @staticmethod
+    def _params_to_ints(qs):
+        return [int(str_id) for str_id in qs.split(",")]
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        title = self.request.query_params.get("title")
+        genres = self.request.query_params.get("genre")
+        actors = self.request.query_params.get("actors")
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if genres:
+            genres_ids = self._params_to_ints(genres)
+            queryset = queryset.filter(genres__id__in=genres_ids)
+
+        if actors:
+            actors_ids = self._params_to_ints(actors)
+            queryset = queryset.filter(actors__id__in=actors_ids)
+
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -86,6 +112,9 @@ class PerformanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.select_related("play", "theatre_hall")
 
+        date = self.request.query_params.get("date")
+        play = self.request.query_params.get("play")
+
         if self.action == "list":
             queryset = queryset.annotate(
                 tickets_available=(
@@ -94,6 +123,13 @@ class PerformanceViewSet(viewsets.ModelViewSet):
                     - Count("tickets")
                 )
             )
+
+        if date:
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+            queryset = queryset.filter(show_time__date=date)
+
+        if play:
+            queryset = queryset.filter(play__id=play)
 
         return queryset
 
