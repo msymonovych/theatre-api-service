@@ -9,6 +9,9 @@ class Play(models.Model):
     actors = models.ManyToManyField("Actor", related_name="plays")
     genres = models.ManyToManyField("Genre", related_name="plays")
 
+    class Meta:
+        ordering = ("title",)
+
     def __str__(self):
         return self.title
 
@@ -54,6 +57,9 @@ class Performance(models.Model):
     )
     show_time = models.DateTimeField()
 
+    class Meta:
+        ordering = ("-show_time",)
+
     def __str__(self):
         return f"{self.play.title} {self.show_time}"
 
@@ -70,7 +76,7 @@ class Reservation(models.Model):
         return str(self.created_at)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ("-created_at",)
 
 
 class Ticket(models.Model):
@@ -119,3 +125,4 @@ class Ticket(models.Model):
 
     class Meta:
         unique_together = ("performance", "row", "seat")
+        ordering = ("performance", "row", "seat")
