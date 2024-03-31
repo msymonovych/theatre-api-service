@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.db import models
 from rest_framework.exceptions import ValidationError
@@ -122,6 +124,10 @@ class Ticket(models.Model):
             self.performance.theatre_hall,
             ValidationError
         )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ("performance", "row", "seat")
