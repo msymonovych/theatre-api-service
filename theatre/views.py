@@ -52,7 +52,7 @@ class PlayViewSet(
         queryset = self.queryset
 
         title = self.request.query_params.get("title")
-        genres = self.request.query_params.get("genre")
+        genres = self.request.query_params.get("genres")
         actors = self.request.query_params.get("actors")
 
         if title:
