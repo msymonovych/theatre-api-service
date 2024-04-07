@@ -106,7 +106,7 @@ class PlayViewSet(
             OpenApiParameter(
                 name="genres",
                 description="Filter by genre id (ex. ?genres=1,2)",
-                type={"type": "list", "items":{"type": "number"}}
+                type={"type": "list", "items": {"type": "number"}}
             ),
             OpenApiParameter(
                 name="actors",
