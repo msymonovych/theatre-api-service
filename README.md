@@ -26,4 +26,10 @@ You can now access API by `http://127.0.0.1:8000/` address
 * JWT Token Authentication 
 * Admins can create Plays and manage them directly by website interface
 * Users can make reservations for performances
-* Have understandable documentation 
+* Admin panel /admin/
+* Have understandable documentation at /api/doc/swagger/
+* Creating theatre halls
+* Filtering plays and performances
+
+## DB Structure
+![image_2024-04-08_23-04-07](https://github.com/msymonovych/theatre-api-service/assets/87976005/951faedd-7bc0-4ecf-b70a-4bf5b1face1a)
