@@ -6,7 +6,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -30,7 +30,8 @@ from theatre.serializers import (
     PlayDetailSerializer,
     PerformanceListSerializer,
     PerformanceDetailSerializer,
-    ReservationListSerializer, PlayImageSerializer,
+    ReservationListSerializer,
+    PlayImageSerializer,
 )
 
 
@@ -42,7 +43,9 @@ class PlayViewSet(
 ):
     queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+    permission_classes = [
+        IsAdminOrIfAuthenticatedReadOnly,
+    ]
 
     @staticmethod
     def _params_to_ints(qs):
@@ -84,7 +87,7 @@ class PlayViewSet(
         detail=True,
         methods=["POST"],
         url_path="upload-image",
-        permission_classes=[IsAdminUser]
+
     )
     def upload_image(self, request, pk=None):
         play = self.get_object()
@@ -101,17 +104,17 @@ class PlayViewSet(
             OpenApiParameter(
                 name="title",
                 description="Filter by title (ex. ?title=Title)",
-                type=OpenApiTypes.STR
+                type=OpenApiTypes.STR,
             ),
             OpenApiParameter(
                 name="genres",
                 description="Filter by genre id (ex. ?genres=1,2)",
-                type={"type": "list", "items": {"type": "number"}}
+                type={"type": "list", "items": {"type": "number"}},
             ),
             OpenApiParameter(
                 name="actors",
                 description="Filter by actors id (ex. ?actors=1,2)",
-                type={"type": "list", "items": {"type": "number"}}
+                type={"type": "list", "items": {"type": "number"}},
             ),
         ]
     )
@@ -126,7 +129,9 @@ class ActorViewSet(
 ):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+    permission_classes = [
+        IsAdminOrIfAuthenticatedReadOnly,
+    ]
 
 
 class GenreViewSet(
@@ -136,7 +141,9 @@ class GenreViewSet(
 ):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+    permission_classes = [
+        IsAdminOrIfAuthenticatedReadOnly,
+    ]
 
 
 class TheatreHallViewSet(
@@ -146,13 +153,17 @@ class TheatreHallViewSet(
 ):
     queryset = TheatreHall.objects.all()
     serializer_class = TheatreHallSerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+    permission_classes = [
+        IsAdminOrIfAuthenticatedReadOnly,
+    ]
 
 
 class PerformanceViewSet(viewsets.ModelViewSet):
     queryset = Performance.objects.all()
     serializer_class = PerformanceSerializer
-    permission_classes = [IsAdminOrIfAuthenticatedReadOnly,]
+    permission_classes = [
+        IsAdminOrIfAuthenticatedReadOnly,
+    ]
 
     def get_queryset(self):
         queryset = self.queryset.select_related("play", "theatre_hall")
@@ -163,8 +174,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             queryset = queryset.annotate(
                 tickets_available=(
-                    F("theatre_hall__rows")
-                    * F("theatre_hall__seats_in_row")
+                    F("theatre_hall__rows") * F("theatre_hall__seats_in_row")
                     - Count("tickets")
                 )
             )
@@ -192,16 +202,16 @@ class PerformanceViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 name="date",
                 description=(
-                        "Filter by show time date "
-                        "(ex. ?date=2020-01-10)"
+                    "Filter by show time date "
+                    "(ex. ?date=2020-01-10)"
                 ),
-                type=OpenApiTypes.DATE
+                type=OpenApiTypes.DATE,
             ),
             OpenApiParameter(
                 name="play",
                 description="Filter by play id (ex. ?play=1)",
-                type=OpenApiTypes.INT
-            )
+                type=OpenApiTypes.INT,
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -214,9 +224,7 @@ class ReservationPagination(PageNumberPagination):
 
 
 class ReservationViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    GenericViewSet
+    mixins.ListModelMixin, mixins.CreateModelMixin, GenericViewSet
 ):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
