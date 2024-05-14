@@ -1,17 +1,8 @@
-import os
-import uuid
-
+from rest_framework.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
-from django.utils.text import slugify
-from rest_framework.exceptions import ValidationError
 
-
-def play_image_path(instance, filename: str):
-    _, extension = os.path.splitext(filename)
-    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
-
-    return os.path.join("uploads/plays/", filename)
+from theatre.utils import play_image_path
 
 
 class Play(models.Model):
@@ -106,10 +97,7 @@ class Ticket(models.Model):
 
     @staticmethod
     def validate_ticket(
-            seat: int,
-            row: int,
-            theatre_hall: TheatreHall,
-            error_to_raise
+        seat: int, row: int, theatre_hall: TheatreHall, error_to_raise
     ) -> None:
         if not (1 <= seat <= theatre_hall.seats_in_row):
             raise error_to_raise(
@@ -122,17 +110,12 @@ class Ticket(models.Model):
             )
         elif not (1 <= row <= theatre_hall.rows):
             raise error_to_raise(
-                {
-                    "rows": f"row must be in range [1, {theatre_hall.rows}]"
-                }
+                {"rows": f"row must be in range [1, {theatre_hall.rows}]"}
             )
 
     def clean(self):
         Ticket.validate_ticket(
-            self.seat,
-            self.row,
-            self.performance.theatre_hall,
-            ValidationError
+            self.seat, self.row, self.performance.theatre_hall, ValidationError
         )
 
     def save(self, *args, **kwargs):
