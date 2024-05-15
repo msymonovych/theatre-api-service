@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from theatre.permissions import IsAdminOrIfAuthenticatedReadOnly
+# from theatre.permissions import IsAdminOrIfAuthenticatedReadOnly
 from theatre.models import (
     Play,
     Actor,
@@ -43,9 +43,6 @@ class PlayViewSet(
 ):
     queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
-    permission_classes = [
-        IsAdminOrIfAuthenticatedReadOnly,
-    ]
 
     @staticmethod
     def _params_to_ints(qs):
@@ -129,9 +126,6 @@ class ActorViewSet(
 ):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
-    permission_classes = [
-        IsAdminOrIfAuthenticatedReadOnly,
-    ]
 
 
 class GenreViewSet(
@@ -141,9 +135,6 @@ class GenreViewSet(
 ):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [
-        IsAdminOrIfAuthenticatedReadOnly,
-    ]
 
 
 class TheatreHallViewSet(
@@ -153,17 +144,11 @@ class TheatreHallViewSet(
 ):
     queryset = TheatreHall.objects.all()
     serializer_class = TheatreHallSerializer
-    permission_classes = [
-        IsAdminOrIfAuthenticatedReadOnly,
-    ]
 
 
 class PerformanceViewSet(viewsets.ModelViewSet):
     queryset = Performance.objects.all()
     serializer_class = PerformanceSerializer
-    permission_classes = [
-        IsAdminOrIfAuthenticatedReadOnly,
-    ]
 
     def get_queryset(self):
         queryset = self.queryset.select_related("play", "theatre_hall")
