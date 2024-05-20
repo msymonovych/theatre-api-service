@@ -21,20 +21,15 @@ class AuthenticatedReservationApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            username="user",
-            password="testPass1"
+            username="user", password="testPass1"
         )
         self.client.force_authenticate(user=self.user)
         self.play = Play.objects.create(
             title="testPlay",
             description="test Description",
         )
-        self.genre = Genre.objects.create(
-            name="testGenre"
-        )
-        self.reservation = Reservation.objects.create(
-            user=self.user
-        )
+        self.genre = Genre.objects.create(name="testGenre")
+        self.reservation = Reservation.objects.create(user=self.user)
 
     def test_reservation_list(self):
         response = self.client.get(reverse("theatre:reservation-list"))

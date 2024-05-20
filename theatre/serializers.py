@@ -119,7 +119,7 @@ class TicketSerializer(serializers.ModelSerializer):
             row=attrs["row"],
             seat=attrs["seat"],
             theatre_hall=attrs["performance"].theatre_hall,
-            error_to_raise=ValidationError
+            error_to_raise=ValidationError,
         )
         return data
 

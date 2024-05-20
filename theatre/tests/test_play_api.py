@@ -32,8 +32,7 @@ class AuthenticatedPlayApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            username="user",
-            password="testPass1"
+            username="user", password="testPass1"
         )
         self.client.force_authenticate(user=self.user)
         self.play = sample_play(title="test1")
@@ -67,8 +66,7 @@ class AuthenticatedPlayApiTests(TestCase):
         play2.genres.add(genre2)
 
         response = self.client.get(
-            reverse("theatre:play-list"),
-            {"genres": f"{genre1.id},{genre2.id}"}
+            reverse("theatre:play-list"), {"genres": f"{genre1.id},{genre2.id}"}
         )
 
         serializer1 = PlayListSerializer(play1)
@@ -80,12 +78,8 @@ class AuthenticatedPlayApiTests(TestCase):
         self.assertNotIn(serializer3.data, response.data)
 
     def test_filter_play_by_actors(self):
-        actor1 = Actor.objects.create(
-            first_name="Actor 1", last_name="test"
-        )
-        actor2 = Actor.objects.create(
-            first_name="Actor 2", last_name="test"
-        )
+        actor1 = Actor.objects.create(first_name="Actor 1", last_name="test")
+        actor2 = Actor.objects.create(first_name="Actor 2", last_name="test")
 
         play1 = sample_play(title="Play 1")
         play2 = sample_play(title="Play 2")
@@ -94,8 +88,7 @@ class AuthenticatedPlayApiTests(TestCase):
         play2.actors.add(actor2)
 
         response = self.client.get(
-            reverse("theatre:play-list"),
-            {"actors": f"{actor1.id},{actor2.id}"}
+            reverse("theatre:play-list"), {"actors": f"{actor1.id},{actor2.id}"}
         )
 
         serializer1 = PlayListSerializer(play1)
@@ -110,10 +103,7 @@ class AuthenticatedPlayApiTests(TestCase):
         play1 = sample_play(title="Play Target")
         play2 = sample_play(title="Another Play")
 
-        res = self.client.get(
-            reverse("theatre:play-list"),
-            {"title": "play"}
-        )
+        res = self.client.get(reverse("theatre:play-list"), {"title": "play"})
 
         serializer1 = PlayListSerializer(play1)
         serializer2 = PlayListSerializer(play2)
@@ -124,10 +114,7 @@ class AuthenticatedPlayApiTests(TestCase):
         self.assertNotIn(serializer3.data, res.data)
 
     def test_admin_rights_required(self):
-        data = {
-            "title": "test",
-            "description": "test description"
-        }
+        data = {"title": "test", "description": "test description"}
         response = self.client.post(reverse("theatre:play-list"), data)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -137,21 +124,18 @@ class AdminPlayApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = get_user_model().objects.create_superuser(
-            username="admin",
-            password="adminPass1"
+            username="admin", password="adminPass1"
         )
         self.client.force_authenticate(user=self.admin)
 
     def test_play_create(self):
         genre = Genre.objects.create(name="Test Genre")
-        actor = Actor.objects.create(
-            first_name="Test", last_name="Actor"
-        )
+        actor = Actor.objects.create(first_name="Test", last_name="Actor")
         data = {
             "title": "test",
             "description": "test description",
             "actors": [actor.id],
-            "genres": [genre.id]
+            "genres": [genre.id],
         }
         response = self.client.post(
             reverse("theatre:play-list"),
